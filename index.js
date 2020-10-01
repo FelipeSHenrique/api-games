@@ -116,5 +116,5 @@ app.put("/game/:id", (req, res) => {
 });
 
 app.listen(3333, () => {
-  console.log("API RODANDO");
+  console.log("API RODANDO!");
 });
