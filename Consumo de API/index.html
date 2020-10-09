@@ -9,6 +9,11 @@
 
 <body>
 
+  <h2>Login</h2>
+  <input type="text" name="email" id="email" placeholder="E-mail"> <br><br>
+  <input type="text" name="password" id="password" placeholder="********">
+  <button onclick="login()">Entrar</button>
+
   <hr>
   <h4>Lista de Games</h4>
   <ul id="games"></ul>
@@ -29,6 +34,31 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
+
+  let axiosConfig = {
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("token")
+    }
+  }
+
+  function login() {
+    let emailField = document.getElementById("email");
+    let passwordField = document.getElementById("password");
+
+    let email = emailField.value;
+    let password = passwordField.value;
+
+    axios.post("http://localhost:3333/auth", {
+      email,
+      password
+    }).then(res => {
+      let token = res.data.token;
+      localStorage.setItem("token", token);
+      axiosConfig.headers.Authorization = "Bearer " + localStorage.getItem("token");
+    }).catch(err => {
+      alert("Login incorreto.....");
+    });
+  }
 
   function createGame() {
 
@@ -54,7 +84,7 @@
 
   function deleteGame(listItem) {
     let id = listItem.getAttribute("data-id");
-    axios.delete("http://localhost:3333/game/" + id).then(response => {
+    axios.delete("http://localhost:3333/game/" + id, axiosConfig).then(response => {
       alert("Game deletado!");
     }).catch(err => {
       console.log(err);
@@ -88,7 +118,7 @@
 
     let id = idInput.value;
 
-    axios.put("http://localhost:3333/game/" + id, game).then(response => {
+    axios.put("http://localhost:3333/game/" + id, game, axiosConfig).then(response => {
       if (response.status == 200) {
         alert("Game Atualizado!");
       }
@@ -97,7 +127,7 @@
     });
   }
 
-  axios.get("http://localhost:3333/games").then(response => {
+  axios.get("http://localhost:3333/games", axiosConfig).then(response => {
     let games = response.data;
     let list = document.getElementById("games");
 
